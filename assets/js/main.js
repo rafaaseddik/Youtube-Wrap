@@ -61,7 +61,7 @@ async function processData(data) {
     data
         .filter(video => video.titleUrl && video.titleUrl.includes("\u003d"))
         .forEach(video => {
-            const title = video.title;
+            const { title } = video;
             if (!REMOVED_VIDEO_TITLES.includes(title) && new Date(video.time).getUTCFullYear() === 2024) {
                 const id = YoutubeAPI.getIdFromURL(video.titleUrl);
                 if (videosMap.has(id)) {
@@ -116,7 +116,7 @@ async function processData(data) {
         ...topFiveHundredProcessed[8],
         ...topFiveHundredProcessed[9],
     ];
-    topFiveHundredProcessedMerged.forEach((videoStats, index) => {
+    topFiveHundredProcessedMerged.forEach((videoStats) => {
         videosMap.get(videoStats.id).fromYoutubeAPI = videoStats;
     })
     topFiveHundred = topFiveHundred.filter(e => e.fromYoutubeAPI !== undefined)

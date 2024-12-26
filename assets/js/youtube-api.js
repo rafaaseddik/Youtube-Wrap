@@ -13,22 +13,24 @@ class YoutubeAPI{
      * }]>}
      */
     static async getVideosMetadata(videosIDs){
-        let result = await fetch(`${GOOGLE_API_URL}videos?id=${encodeURIComponent(videosIDs.join(','))}&part=snippet,statistics&key=${API_KEY}`);
-        let resultJSON = await result.json()
-        return resultJSON.items.map(videoItem=>{
-            try{
-                return {
+        let result = await fetch(`${GOOGLE_API_URL}videos?id=${encodeURIComponent(videosIDs.join(','))}&part=snippet,statistics,status&key=${API_KEY}`);
+        let resultJSON = await result.json();
+        return resultJSON.items.reduce((acc, videoItem) => {
+            if (videoItem.status.privacyStatus === "public") {
+                try {
+                    acc.push({
                     id:videoItem.id,
                     channelTitle:videoItem.snippet.channelTitle,
                     channelURL:"https://youtube.com/channel/"+videoItem.snippet.channelId,
                     watchCount:videoItem.statistics.viewCount,
                     thumbnailUrl:this.thumbnailExtractor(videoItem.snippet.thumbnails)
-                };
-            }catch(e){
-                console.error("error with video", videoItem, e)
+                    });
+                } catch(e) {
+                    console.error("error with video", videoItem, e);
+                }
             }
-
-        })
+            return acc;
+        }, []);
     }
     static thumbnailExtractor(thumbnailsObject){
         if(thumbnailsObject.standard){
