@@ -5,6 +5,8 @@ const viewModalBtn = document.querySelectorAll('.play-btn');
 const viewModalIFrame = document.getElementById('video-frame');
 const loading = document.getElementById('loader');
 const content = document.getElementById('content');
+const topVideos = document.getElementById('top-500-videos');
+const topChannels = document.getElementById('top-500-channels');
 const REMOVED_VIDEO_TITLES = ["Watched a video that has been removed", "Visited YouTube Music"];
 
 /**
@@ -17,7 +19,16 @@ async function main() {
     uploadInput.addEventListener("change", (e) => handleSelectFile(e));
     console.log(viewModalBtn)
     viewModalBtn.forEach(elt => elt.addEventListener('click', openModal))
+}
 
+/**
+ * @description
+ * This function initializes the lists of top 100 videos and top 20 channels
+ * @returns {void}
+ */
+function initializeLists() {
+    topVideos.innerHTML = '';
+    topChannels.innerHTML = '';
 }
 
 /**
@@ -42,6 +53,7 @@ async function handleSelectFile(event) {
     const fileReader = new FileReader();
     fileReader.readAsText(event.target.files[0]);
     fileReader.onload = (e) => {
+        initializeLists();
         processData(JSON.parse(e.target.result))
     }
 }
@@ -151,7 +163,7 @@ async function processData(data) {
     })
     // TOP 500 VIDEOS
     topFiveHundred.slice(0, 100).forEach((video, index) => {
-        document.getElementById('top-500-videos').innerHTML += `
+        topVideos.innerHTML += `
         <tr>
                         <th scope="row">${index + 1}</th>
                         <td><a href="${video.url}" target="_blank">${video.title}</a></td>
@@ -163,7 +175,7 @@ async function processData(data) {
     const sortedChannelsList = Array.from(channelsMap.values()).sort((c1, c2) => c2.viewsCount - c1.viewsCount);
     console.log(sortedChannelsList)
     sortedChannelsList.slice(0, 20).forEach((channel, index) => {
-        document.getElementById('top-500-channels').innerHTML += `
+        topChannels.innerHTML += `
         <tr>
             <th scope="row">${index + 1}</th>
             <td><a href="${channel.url}" target="_blank">${channel.channelTitle}</a></td>
